@@ -166,5 +166,62 @@ namespace TestANN
             writer.Close();
             fileStream.Close();
         }
+
+        public void Read(string filePath)
+        {
+            FileStream fileStream = new FileStream(filePath, FileMode.Open);
+            BinaryReader reader = new BinaryReader(fileStream);
+            // Read the header
+            //writer.Write(header.sGroupID.ToCharArray());
+            int chunkID = reader.ReadInt32();
+            //writer.Write(header.dwFileLength);
+            int fileSize = reader.ReadInt32();
+            //writer.Write(header.sRiffType.ToCharArray());
+            int riffType = reader.ReadInt32();
+
+            // Read the format chunk
+            //writer.Write(format.sChunkID.ToCharArray());
+            int fmtID = reader.ReadInt32();
+            //writer.Write(format.dwChunkSize);
+            int fmtSize = reader.ReadInt32();
+            //writer.Write(format.wFormatTag);
+            int fmtCode = reader.ReadInt16();
+            //writer.Write(format.wChannels);
+            int channels = reader.ReadInt16();
+            //writer.Write(format.dwSamplesPerSec);
+            int sampleRate = reader.ReadInt32();
+            //writer.Write(format.dwAvgBytesPerSec);
+            int fmtAvgBPS = reader.ReadInt32();
+            //writer.Write(format.wBlockAlign);
+            int fmtBlockAlign = reader.ReadInt16();
+            //writer.Write(format.wBitsPerSample);
+            int bitDepth = reader.ReadInt16();
+
+            if (fmtSize == 18)
+            {
+                // Read any extra values
+                int fmtExtraSize = reader.ReadInt16();
+                reader.ReadBytes(fmtExtraSize);
+            }
+
+            //// Write the data chunk
+            //writer.Write(data.sChunkID.ToCharArray());
+            int dataID = reader.ReadInt32();
+            //writer.Write(data.dwChunkSize);
+            int dataSize = reader.ReadInt32();
+            //foreach (short dataPoint in data.shortArray)
+            //{
+            //    writer.Write(dataPoint);
+            //}
+
+            //writer.Seek(4, SeekOrigin.Begin);
+            //uint filesize = (uint)writer.BaseStream.Length;
+            //writer.Write(filesize - 8);
+
+            //// Clean up
+            //writer.Close();
+            //fileStream.Close();
+
+        }
     }
 }
