@@ -36,5 +36,16 @@ namespace TestANN
                 a.Play();
             }
         }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            if (dlg.ShowDialog() == true)
+            {
+                WaveGenerator wg = new WaveGenerator(WaveExampleType.ExampleSineWave);
+                wg.Save(dlg.FileName);
+            }
+
+        }
     }
 }
