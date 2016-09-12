@@ -11,8 +11,10 @@
             <ColumnDefinition Width="25*"/>
             <ColumnDefinition Width="22*"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="45,261,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
-        <Button x:Name="button1" Grid.ColumnSpan="2" Content="Button" HorizontalAlignment="Left" Margin="223,261,0,0" VerticalAlignment="Top" Width="75" Click="button1_Click"/>
+        <Button x:Name="LoadAndPlay" Content="Button" HorizontalAlignment="Left" Margin="45,261,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        <Button x:Name="Save" Grid.ColumnSpan="2" Content="Button" HorizontalAlignment="Left" Margin="223,261,0,0" VerticalAlignment="Top" Width="75" Click="button1_Click"/>
+        <Canvas x:Name="MyCanvas" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="143" Margin="83,75,0,0" VerticalAlignment="Top" Width="240"/>
+        <Button x:Name="Draw" Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="84,270,0,0" VerticalAlignment="Top" Width="75" Click="Draw_Click"/>
 
     </Grid>
 </Window>

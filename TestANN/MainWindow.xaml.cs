@@ -47,5 +47,15 @@ namespace TestANN
             }
 
         }
+
+        private void Draw_Click(object sender, RoutedEventArgs e)
+        {
+            Polyline pl = new Polyline();
+            pl.Stroke = new SolidColorBrush(Colors.Black);
+            pl.Points.Add(new Point(10, 10));
+            pl.Points.Add(new Point(100, 100));
+            MyCanvas.Children.Add(pl);
+            MyCanvas.UpdateLayout();
+        }
     }
 }
