@@ -32,6 +32,9 @@ namespace TestANN
             OpenFileDialog dlg = new OpenFileDialog();
             if (dlg.ShowDialog() == true)
             {
+                //WaveGenerator wg = new WaveGenerator(WaveExampleType.ExampleSineWave);
+                //wg.Read(dlg.FileName);
+                //wg.Save(dlg.FileName+"2");
                 a.Load(dlg.FileName);
                 a.Play();
             }

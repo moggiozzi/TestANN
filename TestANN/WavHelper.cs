@@ -173,31 +173,21 @@ namespace TestANN
             BinaryReader reader = new BinaryReader(fileStream);
             // Read the header
             //writer.Write(header.sGroupID.ToCharArray());
-            int chunkID = reader.ReadInt32();
-            //writer.Write(header.dwFileLength);
-            int fileSize = reader.ReadInt32();
-            //writer.Write(header.sRiffType.ToCharArray());
-            int riffType = reader.ReadInt32();
-
+            int riffstr = reader.ReadInt32(); //"RIFF"
+            header.dwFileLength = reader.ReadUInt32();
+            int wavestr = reader.ReadInt32(); //"WAVE"
             // Read the format chunk
-            //writer.Write(format.sChunkID.ToCharArray());
-            int fmtID = reader.ReadInt32();
-            //writer.Write(format.dwChunkSize);
-            int fmtSize = reader.ReadInt32();
-            //writer.Write(format.wFormatTag);
-            int fmtCode = reader.ReadInt16();
-            //writer.Write(format.wChannels);
-            int channels = reader.ReadInt16();
-            //writer.Write(format.dwSamplesPerSec);
-            int sampleRate = reader.ReadInt32();
-            //writer.Write(format.dwAvgBytesPerSec);
-            int fmtAvgBPS = reader.ReadInt32();
-            //writer.Write(format.wBlockAlign);
-            int fmtBlockAlign = reader.ReadInt16();
-            //writer.Write(format.wBitsPerSample);
-            int bitDepth = reader.ReadInt16();
-
-            if (fmtSize == 18)
+            int fmt_str = reader.ReadInt32(); //"fmt "
+            format.dwChunkSize = reader.ReadUInt32();
+            format.wFormatTag = reader.ReadUInt16();
+            format.wChannels = reader.ReadUInt16();
+            format.dwSamplesPerSec = reader.ReadUInt32();
+            format.dwAvgBytesPerSec = reader.ReadUInt32();
+            format.wBlockAlign = reader.ReadUInt16();
+            format.wBitsPerSample = reader.ReadUInt16();
+            if (format.wBitsPerSample != 16)
+                throw new Exception("Not supported bit depth!");
+            if (format.dwChunkSize == 18)
             {
                 // Read any extra values
                 int fmtExtraSize = reader.ReadInt16();
@@ -205,22 +195,17 @@ namespace TestANN
             }
 
             //// Write the data chunk
-            //writer.Write(data.sChunkID.ToCharArray());
-            int dataID = reader.ReadInt32();
-            //writer.Write(data.dwChunkSize);
-            int dataSize = reader.ReadInt32();
-            //foreach (short dataPoint in data.shortArray)
-            //{
-            //    writer.Write(dataPoint);
-            //}
-
-            //writer.Seek(4, SeekOrigin.Begin);
-            //uint filesize = (uint)writer.BaseStream.Length;
-            //writer.Write(filesize - 8);
-
-            //// Clean up
-            //writer.Close();
-            //fileStream.Close();
+            int datastr = reader.ReadInt32();//"data"
+            data.dwChunkSize = reader.ReadUInt32();
+            //todo Check real data size
+            uint sampleCount = data.dwChunkSize / ((uint)format.wBitsPerSample / 8);
+            data.shortArray = new short[sampleCount];
+            for (int i=0;i<sampleCount;i++)
+            {
+                data.shortArray[i] = reader.ReadInt16();
+            }
+            reader.Close();
+            fileStream.Close();
 
         }
     }
