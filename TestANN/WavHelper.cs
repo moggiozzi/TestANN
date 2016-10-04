@@ -152,7 +152,7 @@ namespace TestANN
 
             // Write the data chunk
             writer.Write(data.sChunkID.ToCharArray());
-            writer.Write(data.dwChunkSize);
+            writer.Write(data.dwChunkSize*data.shortArray.Count()*(format.wBitsPerSample/8));
             foreach (short dataPoint in data.shortArray)
             {
                 writer.Write(dataPoint);
