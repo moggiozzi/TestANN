@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TestANN.Network;
 
 namespace TestANN
 {
@@ -59,6 +60,13 @@ namespace TestANN
             pl.Points.Add(new Point(100, 100));
             MyCanvas.Children.Add(pl);
             MyCanvas.UpdateLayout();
+        }
+
+        private void TestNet_Click(object sender, RoutedEventArgs e)
+        {
+            BinaryNetwork bn = new BinaryNetwork(2);
+            double[] test_ar = new double[5];
+            bn.training(test_ar);
         }
     }
 }

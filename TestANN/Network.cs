@@ -29,8 +29,9 @@ namespace TestANN.Network
     public class BinaryNetwork
     {
         static Random Rnd = new Random();
-        double[] weights;
-        double[] values;
+        double[] weights; // веса связей
+        double[] values; // значения функции нейрона
+        double[] s; // массив ошибок для обучения
         int depth;
         int ncount;
         public BinaryNetwork(int depth_)
@@ -40,6 +41,7 @@ namespace TestANN.Network
             //сеть в форме полного двоичного дерева
             weights = new double[ncount];
             values = new double[ncount];
+            s = new double[ncount];
             //инициализация сети
             for (int i = 0; i < ncount; i++)
             {
@@ -52,26 +54,27 @@ namespace TestANN.Network
         public void training(double[] ivals)
         {
             double x;
+            Array.Copy(ivals, values, (int)Math.Pow(2, depth));
             //i первый источник
             //j приемник
-            for (int i=0,j=(int)Math.Pow(2,depth); i < ncount-1; i+=2,j++)
+            for (int i=0,j=(int)Math.Pow(2,depth); i < ncount-2; i+=2,j++)
             {
                 x = values[i] * weights[i] + values[i + 1] * weights[i + 1];
                 values[j] = func(x);
             }
             // обратное распространение ошибки
-            double[] s = new double[values.Count()];
-            s[ncount - 2] = ivals[ncount-1] - values[ncount-2];
-            for (int j = ncount-2, i = j - 1; i > 1; i -= 2, j--)
+            s[ncount - 2] = ivals.Last() - values[ncount-2];
+            for (int j = ncount-2, i = j - 1; i > 0; i -= 2, j--)
             {
                 s[i] = s[j] * weights[i];
                 s[i - 1] = s[j] * weights[j - 1];
             }
             // скорректировать веса
             double trainingSpeed = 0.1;
-            for (int i = 0, j = (int)Math.Pow(2, depth); i < ncount - 1; i += 2, j++)
+            for (int i = 0, j = (int)Math.Pow(2, depth); i < ncount - 2; i += 2, j++)
             {
                 weights[i] += trainingSpeed * s[j] * dfunc(values[i]);
+                weights[i+1] += trainingSpeed * s[j] * dfunc(values[i+1]);
             }
         }
     }
