@@ -49,8 +49,8 @@ namespace TestANN
             sChunkID = "fmt ";
             dwChunkSize = 16;
             wFormatTag = 1;
-            wChannels = 2;
-            dwSamplesPerSec = 44100;
+            wChannels = 1;
+            dwSamplesPerSec = 16000;// 44100;
             wBitsPerSample = 16;
             wBlockAlign = (ushort)(wChannels * (wBitsPerSample / 8));
             dwAvgBytesPerSec = dwSamplesPerSec * wBlockAlign;
@@ -85,8 +85,15 @@ namespace TestANN
         WaveHeader header;
         WaveFormatChunk format;
         WaveDataChunk data;
-
-        public WaveGenerator(WaveExampleType type)
+        public short[] getData()
+        {
+            return data.shortArray;
+        }
+        public void setData(short[] ndata)
+        {
+            data.shortArray = ndata;
+        }
+        public WaveGenerator(WaveExampleType type = WaveExampleType.ExampleSineWave)
         {
             // Init chunks
             header = new WaveHeader();
@@ -97,15 +104,14 @@ namespace TestANN
             switch (type)
             {
                 case WaveExampleType.ExampleSineWave:
+                    int amplitude = 32760;  // Max amplitude for 16-bit audio
+                    double freq = 660.0;
 
                     // Number of samples = sample rate * channels * bytes per sample
-                    uint numSamples = format.dwSamplesPerSec * format.wChannels;
-
+                    //uint numSamples = format.dwSamplesPerSec * format.wChannels;
+                    uint numSamples = (uint)(format.dwSamplesPerSec / freq);
                     // Initialize the 16-bit array
                     data.shortArray = new short[numSamples];
-
-                    int amplitude = 32760;  // Max amplitude for 16-bit audio
-                    double freq = 440.0f;   // Concert A: 440Hz
 
                     // The "angle" used in the function, adjusted for the number of channels and sample rate.
                     // This value is like the period of the wave.

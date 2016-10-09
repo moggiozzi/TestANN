@@ -64,9 +64,7 @@ namespace TestANN
 
         private void TestNet_Click(object sender, RoutedEventArgs e)
         {
-            BinaryNetwork bn = new BinaryNetwork(2);
-            double[] test_ar = new double[5];
-            bn.training(test_ar);
+            Tests.TestBinaryNetwork();
         }
     }
 }
