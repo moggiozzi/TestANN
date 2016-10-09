@@ -56,12 +56,12 @@ namespace TestANN.Network
         /// Обучение сети на входных данных
         /// </summary>
         /// <param name="ivals"></param>
-        public void doTraining(double[] ivals)
+        public void doTraining(double[] ivals, double nextVal)
         {
-            Array.Copy(ivals, values, (int)Math.Pow(2, depth));
+            initInputs(ivals);
             handleNetwork();
             // обратное распространение ошибки
-            s[ncount - 2] = ivals.Last() - values[ncount-2];
+            s[ncount - 2] = nextVal - values[ncount-2];
             for (int j = ncount-2, i = j - 1; i > 0; i -= 2, j--)
             {
                 s[i] = s[j] * weights[i];
@@ -141,6 +141,16 @@ namespace TestANN.Network
             }
             s = Math.Sqrt(s / n);
             return s;
+        }
+
+        public void Save()
+        {
+            //todo
+        }
+        public bool Load()
+        {
+            //todo
+            return false;
         }
     }
 }

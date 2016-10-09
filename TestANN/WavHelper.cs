@@ -105,7 +105,7 @@ namespace TestANN
             {
                 case WaveExampleType.ExampleSineWave:
                     int amplitude = 32760;  // Max amplitude for 16-bit audio
-                    double freq = 660.0;
+                    double freq = 640.0;
 
                     // Number of samples = sample rate * channels * bytes per sample
                     //uint numSamples = format.dwSamplesPerSec * format.wChannels;
@@ -117,7 +117,7 @@ namespace TestANN
                     // This value is like the period of the wave.
                     double t = (Math.PI * 2 * freq) / (format.dwSamplesPerSec * format.wChannels);
 
-                    for (uint i = 0; i < numSamples - 1; i++)
+                    for (uint i = 0; i < numSamples; i++)
                     {
                         // Fill with a simple sine wave at max amplitude
                         for (int channel = 0; channel < format.wChannels; channel++)

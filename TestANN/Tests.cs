@@ -22,17 +22,29 @@ namespace TestANN
         }
         public static void TestBinaryNetwork()
         {
-            BinaryNetwork bn = new BinaryNetwork(5);
+            int depth = 5;
+            int i, j;
+            BinaryNetwork bn = new BinaryNetwork(depth); // 2^5=32 входа
+
+            //Сгенерируем для обучения несколько синусоид с разной фазой
             WaveGenerator wg = new WaveGenerator();
             short[] data = wg.getData();
-            double[] dd = new double[data.Count()];
-            shortToDouble(data, dd);
-
-            double[] dd_pred = new double[data.Count()];
-            bn.doTraining(dd);
-            bn.getNextArray(dd, ref dd_pred);
-
-            doubleToShort(dd, data);
+            List<double[]> trainingDataList = new List<double[]>();
+            double[]   dataNextVal = new double[data.Length];
+            for (i = 0; i < data.Length; i++)
+            {
+                trainingDataList.Add(new double[(int)Math.Pow(2, depth)]);
+                double[] d = trainingDataList[i];
+                for (j = 0; j < d.Length; j++)
+                    d[j] = data[(j + i) % data.Length] / WAV_MAX_VAL;
+                dataNextVal[i] = data[(j + i) % data.Length] / WAV_MAX_VAL;
+            }
+            double diff;
+            while (true)
+            {
+                diff = bn.getNextVal(trainingDataList[i]) - dataNextVal[0];
+                bn.doTraining(trainingDataList[0], dataNextVal[0]);
+            }
             //wg.Save();
         }
     }
