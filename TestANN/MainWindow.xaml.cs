@@ -64,7 +64,7 @@ namespace TestANN
 
         private void TestNet_Click(object sender, RoutedEventArgs e)
         {
-            Tests.TestBinaryNetwork();
+            Tests.TestNetwork();
         }
     }
 }
