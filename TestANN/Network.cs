@@ -156,7 +156,8 @@ namespace TestANN.Network
     {
         // входной слой - нулевой ("нижний")
         double[][][] weights; // [индекс слоя][индекс нейрона][индекс входа]
-        double[][] values; // [индекс слоя][индекс нейрона]
+        double[][] values; // сумма входов к нейрону [индекс слоя][индекс нейрона]
+        double[][] charges; // результат активационной функции нейрона func(values)
         double[][] errorVals;
         /// <param name="eachLayerNeuronCount">количество нейронов в каждом слое начиная со входного слоя</param>
         public FullConnectedNetwork(uint[] eachLayerNeuronCount)
@@ -168,6 +169,7 @@ namespace TestANN.Network
                     throw new Exception();
             weights = new double[eachLayerNeuronCount.Count() - 1][][];
             values = new double[eachLayerNeuronCount.Count()][];
+            charges = new double[eachLayerNeuronCount.Count()][];
             errorVals = new double[eachLayerNeuronCount.Count()][];// fixme: 0-й слой лишний (оставлен для удобства индексации)
             for (int i = 0; i < eachLayerNeuronCount.Count(); i++)
             {
@@ -176,9 +178,14 @@ namespace TestANN.Network
                 {
                     weights[i - 1] = new double[eachLayerNeuronCount[i]][];
                     for (int j = 0; j < weights[i - 1].Count(); j++)
+                    {
                         weights[i - 1][j] = new double[eachLayerNeuronCount[i - 1]];
+                        for (int k = 0; k < weights[i - 1][j].Count(); k++)
+                            weights[i - 1][j][k] = new Random().NextDouble() * 0.5 - 0.5;
+                    }
                     errorVals[i] = new double[eachLayerNeuronCount[i]];
                 }
+                charges[i] = new double[eachLayerNeuronCount[i]];
                 values[i] = new double[eachLayerNeuronCount[i]];
             }
         }
@@ -202,12 +209,12 @@ namespace TestANN.Network
                 {
                     if (i == values.Count() - 1)
                     {
-                        errorVals[i][j] = values[i][j] - ovals[j];
+                        errorVals[i][j] = ovals[j] - charges[i][j];
                     }
                     else
                     {
                         errorVals[i][j] = 0.0;
-                        for (int k = 0; k < values[i + 1].Count(); k++) // перебор нейронов предыдущего(сверху) слоя
+                        for (int k = 0; k < values[i + 1].Count(); k++) // перебор нейронов следующего(сверху) слоя
                             errorVals[i][j] += errorVals[i + 1][k] * weights[i][k][j];
                     }
                 }
@@ -227,18 +234,17 @@ namespace TestANN.Network
         double handleNetwork()
         {
             int networkInputsCount = values[0].Count();
-            double x;
             for (int i = 1; i < values.Count(); i++) // для каждого слоя нейронов
             {
                 for (int j = 0; j < values[i].Count(); j++) // для каждого нейрона слоя
                 {
-                    x = 0.0;
+                    values[i][j] = 0.0;
                     for (int k = 0; k < values[i - 1].Count(); k++) // для каждого входа нейрона (перебор нейронов предыдущего слоя)
-                        x += values[i - 1][k] * weights[i - 1][j][k];
-                    values[i][j] = func(x);
+                        values[i][j] += charges[i - 1][k] * weights[i - 1][j][k];
+                    charges[i][j] = func(values[i][j]);
                 }
             }
-            return values.Last().Last();
+            return charges.Last().Last();
         }
         void initInputs(double[] ivals)
         {
@@ -252,9 +258,11 @@ namespace TestANN.Network
             else
                 networkInputsOffset = networkInputsCount - ivals.Count();
             for (int i = 0; i < networkInputsOffset; i++)
-                values[0][i] = 0.0;
+                values[0][i] = charges[0][i] = 0.0;
             for (int i = networkInputsOffset; i < networkInputsCount; i++)
-                values[0][i] = ivals[i - networkInputsOffset + ivalsOffset];
+            {
+                charges[0][i] = values[0][i] = ivals[i - networkInputsOffset + ivalsOffset];
+            }
         }
         /// <summary>
         /// Предсказать один элемент

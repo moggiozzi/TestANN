@@ -163,17 +163,17 @@ namespace TestANN
         }
         public static void TestNetwork()
         {
-            FullConnectedNetwork fcn = new FullConnectedNetwork(new uint[] { 4,4,1 });
+            FullConnectedNetwork fcn = new FullConnectedNetwork(new uint[] { 2,2,1 });
             double[][] ivals = new double[][]{
-                new double[]{ 0.5, 1, 0.5, 0 },
-                new double[]{ 1, 0.5, 0, 0.5 },
-                new double[]{ 0.5, 0, 0.5, 1 },
-                new double[]{ 0, 0.5, 1, 0.5 } };
+                new double[]{ 0, 1},
+                new double[]{ 1, 0},
+                new double[]{ 0, 0},
+                new double[]{ 1, 1} };
             double[][] ovals = new double[][]{
-                new double[]{ 0.5 },
-                new double[]{ 1.0 },
-                new double[]{ 0.5 },
-                new double[]{ 0.0 }};
+                new double[]{ 1 },
+                new double[]{ 1 },
+                new double[]{ 0 },
+                new double[]{ 0 }};
             double[] res = new double[1];
             double[] diff = new double[4];
             double[] oldDiff = new double[4];
@@ -196,6 +196,46 @@ namespace TestANN
                     return;
                 for (int i = 0; i < ivals.Count(); i++)
                     fcn.doTraining(ivals[i], ovals[i]);
+                cnt++;
+            }
+        }
+        public static void TestNetwork2()
+        {
+            FullConnectedNetwork fcn = new FullConnectedNetwork(new uint[] { 4, 4 });
+            double[][] ivals = new double[][]{
+                new double[]{ 0.5, 1, 0.5, 0 },
+                new double[]{ 1, 0.5, 0, 0.5 },
+                new double[]{ 0.5, 0, 0.5, 1 },
+                new double[]{ 0, 0.5, 1, 0.5 } };
+            double[][] ovals = new double[][]{
+                new double[]{ 1,0,0,0 },
+                new double[]{ 0,1,0,0 },
+                new double[]{ 0,0,1,0 },
+                new double[]{ 0,0,0,1 }};
+            double[] res = new double[4];
+            double[] diff = new double[4];
+            double[] oldDiff = new double[4];
+            for (int i = 0; i < 4; i++)
+                oldDiff[i] = 100.0;
+            int cnt = 0;
+            double oldDiffSum = Double.MaxValue;
+            while (true)
+            {
+                double currentDiffSum = 0;
+                for (int i = 0; i < ivals.Count(); i++)
+                {
+                    fcn.handle(ivals[i], res);
+                    diff[i] = 0;
+                    for(int j=0;j<4;j++)
+                        diff[i] += Math.Abs(ovals[i][j] - res[j]);
+                    currentDiffSum += diff[i];
+                }
+                if (oldDiffSum > currentDiffSum)
+                    oldDiffSum = currentDiffSum;
+                else // нет улучшения или возникла ошибка переобучения
+                    return;
+                for (int i = 0; i < ivals.Count(); i++)
+                    fcn.doTraining(ivals[i], ovals[i],1);
                 cnt++;
             }
         }
