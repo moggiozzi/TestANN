@@ -58,7 +58,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Network.cs" />
+    <Compile Include="Network\Dataset.cs" />
+    <Compile Include="Network\Network.cs" />
+    <Compile Include="Network\Neuron.cs" />
+    <Compile Include="Network\Sigmoid.cs" />
+    <Compile Include="Network\Synapse.cs" />
     <Compile Include="Tests.cs" />
     <Compile Include="WavHelper.cs" />
     <Page Include="MainWindow.xaml">

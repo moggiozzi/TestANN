@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TestANN.Network;
+//using TestANN.Network;
+using NeuralNetwork.Network;
 
 namespace TestANN
 {
@@ -34,212 +35,25 @@ namespace TestANN
             for (int i = 0; i < s.Count(); i++)
                 s[i] = doubleToShort(d[i]);
         }
-        public static void TestBinaryNetwork2()
-        {
-            int depth = 5;
-            int i, j;
-            BinaryNetwork bn = new BinaryNetwork(depth); // 2^5=32 входа
-
-            //Сгенерируем для обучения несколько синусоид с разной фазой
-            WaveGenerator wg = new WaveGenerator();
-            short[] data = wg.getData();
-            List<double[]> trainingDataList = new List<double[]>();
-            double[]   dataNextVal = new double[data.Length];
-            for (i = 0; i < data.Length; i++)
-            {
-                trainingDataList.Add(new double[(int)Math.Pow(2, depth)]);
-                double[] d = trainingDataList[i];
-                for (j = 0; j < d.Length; j++)
-                    d[j] = shortToDouble(data[(j + i) % data.Length]);
-                dataNextVal[i] = shortToDouble(data[(j + i) % data.Length]);
-            }
-            double[] diff = new double[trainingDataList.Count()];
-            double[] oldDiff = new double[trainingDataList.Count()];
-            for (i = 0; i < trainingDataList.Count; i++)
-                oldDiff[i] = 100.0;
-            int cnt = 0;
-            double oldDiffSum = Double.MaxValue;
-            while (true)
-            {
-                double currentDiffSum = 0.0;
-                for (i = 0; i < trainingDataList.Count(); i++)
-                {
-                    diff[i] = Math.Abs(bn.getNextVal(trainingDataList[i]) - dataNextVal[i]);
-                    currentDiffSum += diff[i];
-                }
-                if (oldDiffSum > currentDiffSum)
-                    oldDiffSum = currentDiffSum;
-                else // нет улучшения или возникла ошибка переобучения
-                    return;
-                for (i = 0; i < trainingDataList.Count(); i++)
-                    bn.doTraining(trainingDataList[i], dataNextVal[i], 0.5);
-                cnt++;
-            }
-            //wg.Save();
-        }
-        public static void TestBinaryNetwork3()
-        {
-            int depth = 2;
-            int i, j;
-            BinaryNetwork bn = new BinaryNetwork(depth); // 2^2=4 входа
-
-            //Сгенерируем для обучения несколько синусоид с разной фазой
-            short[] data = { 0, 32767, 0, -32767 };
-            List<double[]> trainingDataList = new List<double[]>();
-            double[] dataNextVal = new double[data.Length];
-            for (i = 0; i < data.Length; i++)
-            {
-                trainingDataList.Add(new double[(int)Math.Pow(2, depth)]);
-                double[] d = trainingDataList[i];
-                for (j = 0; j < d.Length; j++)
-                    d[j] = shortToDouble(data[(j + i) % data.Length]);
-                dataNextVal[i] = shortToDouble(data[(j + i) % data.Length]);
-            }
-            double[] diff = new double[trainingDataList.Count()];
-            double[] oldDiff = new double[trainingDataList.Count()];
-            for (i = 0; i < trainingDataList.Count; i++)
-                oldDiff[i] = 100.0;
-            int cnt = 0;
-            double oldDiffSum = Double.MaxValue;
-            while (true)
-            {
-                double currentDiffSum = 0.0;
-                for (i = 0; i < trainingDataList.Count(); i++)
-                {
-                    diff[i] = Math.Abs(bn.getNextVal(trainingDataList[i]) - dataNextVal[i]);
-                    currentDiffSum += diff[i];
-                }
-                if (oldDiffSum > currentDiffSum)
-                    oldDiffSum = currentDiffSum;
-                else // нет улучшения или возникла ошибка переобучения
-                    return;
-                for (i = 0; i < trainingDataList.Count(); i++)
-                    bn.doTraining(trainingDataList[i], dataNextVal[i], 0.5);
-                cnt++;
-            }
-            //wg.Save();
-        }
-        public static void TestBinaryNetwork()
-        {
-            int depth = 3;
-            int i, j;
-            BinaryNetwork bn = new BinaryNetwork(depth); // 2^3=8 входа
-
-            //Сгенерируем для обучения несколько синусоид с разной фазой
-            short[] data = { 0, 32767, 0, -32767, 0, 32767, 0, -32767 };
-            List<double[]> trainingDataList = new List<double[]>();
-            double[] dataNextVal = new double[data.Length];
-            for (i = 0; i < data.Length; i++)
-            {
-                trainingDataList.Add(new double[(int)Math.Pow(2, depth)]);
-                double[] d = trainingDataList[i];
-                for (j = 0; j < d.Length; j++)
-                    d[j] = shortToDouble(data[(j + i) % data.Length]);
-                dataNextVal[i] = shortToDouble(data[(j + i) % data.Length]);
-            }
-            double[] diff = new double[trainingDataList.Count()];
-            double[] oldDiff = new double[trainingDataList.Count()];
-            for (i = 0; i < trainingDataList.Count; i++)
-                oldDiff[i] = 100.0;
-            int cnt = 0;
-            double oldDiffSum = Double.MaxValue;
-            while (true)
-            {
-                double currentDiffSum = 0.0;
-                for (i = 0; i < trainingDataList.Count(); i++)
-                {
-                    diff[i] = Math.Abs(bn.getNextVal(trainingDataList[i]) - dataNextVal[i]);
-                    currentDiffSum += diff[i];
-                }
-                if (oldDiffSum > currentDiffSum)
-                    oldDiffSum = currentDiffSum;
-                else // нет улучшения или возникла ошибка переобучения
-                    return;
-                for (i = 0; i < trainingDataList.Count(); i++)
-                    bn.doTraining(trainingDataList[i], dataNextVal[i], 0.5);
-                cnt++;
-            }
-            //wg.Save();
-        }
         public static void TestNetwork()
         {
-            FullConnectedNetwork fcn = new FullConnectedNetwork(new uint[] { 2,2,1 });
-            double[][] ivals = new double[][]{
-                new double[]{ 0, 1},
-                new double[]{ 1, 0},
-                new double[]{ 0, 0},
-                new double[]{ 1, 1} };
-            double[][] ovals = new double[][]{
-                new double[]{ 1 },
-                new double[]{ 1 },
-                new double[]{ 0 },
-                new double[]{ 0 }};
-            double[] res = new double[1];
-            double[] diff = new double[4];
-            double[] oldDiff = new double[4];
-            for (int i = 0; i < 4; i++)
-                oldDiff[i] = 100.0;
-            int cnt = 0;
-            double oldDiffSum = Double.MaxValue;
-            while (true)
-            {
-                double currentDiffSum = 0;
-                for (int i = 0; i < ivals.Count(); i++)
-                {
-                    fcn.handle(ivals[i], res);
-                    Console.WriteLine("{0} xor {1} = {2}", ivals[i][0], ivals[i][1], res[0]);
-                    diff[i] = ovals[i][0] - res[0];
-                    currentDiffSum += Math.Abs(diff[i]);
-                }
-                if (oldDiffSum > currentDiffSum)
-                    oldDiffSum = currentDiffSum;
-                else // нет улучшения или возникла ошибка переобучения
-                    ;// return;
-                for (int i = 0; i < ivals.Count(); i++)
-                    fcn.doTraining(ivals[i], ovals[i],1.0);
-                cnt++;
-                if (cnt == 2000)
-                    break;
-            }
+            TestNetworkSin();
         }
-        public static void TestNetwork2()
+        public static void TestNetworkSin()
         {
-            FullConnectedNetwork fcn = new FullConnectedNetwork(new uint[] { 4, 4 });
-            double[][] ivals = new double[][]{
-                new double[]{ 0.5, 1, 0.5, 0 },
-                new double[]{ 1, 0.5, 0, 0.5 },
-                new double[]{ 0.5, 0, 0.5, 1 },
-                new double[]{ 0, 0.5, 1, 0.5 } };
-            double[][] ovals = new double[][]{
-                new double[]{ 1,0,0,0 },
-                new double[]{ 0,1,0,0 },
-                new double[]{ 0,0,1,0 },
-                new double[]{ 0,0,0,1 }};
-            double[] res = new double[4];
-            double[] diff = new double[4];
-            double[] oldDiff = new double[4];
-            for (int i = 0; i < 4; i++)
-                oldDiff[i] = 100.0;
-            int cnt = 0;
-            double oldDiffSum = Double.MaxValue;
-            while (true)
-            {
-                double currentDiffSum = 0;
-                for (int i = 0; i < ivals.Count(); i++)
-                {
-                    fcn.handle(ivals[i], res);
-                    diff[i] = 0;
-                    for(int j=0;j<4;j++)
-                        diff[i] += Math.Abs(ovals[i][j] - res[j]);
-                    currentDiffSum += diff[i];
-                }
-                if (oldDiffSum > currentDiffSum)
-                    oldDiffSum = currentDiffSum;
-                else // нет улучшения или возникла ошибка переобучения
-                    return;
-                for (int i = 0; i < ivals.Count(); i++)
-                    fcn.doTraining(ivals[i], ovals[i],1);
-                cnt++;
+            Network net = new Network(4, 4, 1);
+            List<DataSet> dataSets = new List<DataSet>();
+            DataSet ds;
+            ds = new DataSet(new double[] { 0.5, 1, 0.5, 0 }, new double[] { 0.5 }); dataSets.Add(ds);
+            ds = new DataSet(new double[] { 1, 0.5, 0, 0.5 }, new double[] { 1.0 }); dataSets.Add(ds);
+            ds = new DataSet(new double[] { 0.5, 0, 0.5, 1 }, new double[] { 0.5 }); dataSets.Add(ds);
+            ds = new DataSet(new double[] { 0, 0.5, 1, 0.5 }, new double[] { 0.0 }); dataSets.Add(ds);
+            net.Train(dataSets, 1000);
+            for (int i = 0; i < dataSets.Count; i++) {
+                double[] outs = net.Compute(dataSets[i].Values);
+                for(int j=0;j<dataSets[i].Values.Count();j++)
+                    Console.Write("{0} ", dataSets[i].Values[j]);
+                Console.WriteLine("-> {0}", outs[0]);
             }
         }
     }
