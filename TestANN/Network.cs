@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TestANN.Network
 {
-    public abstract class Neuron
+    public abstract class Neuron2
     {
         public double[] weights;
         public double getValue(double x)
@@ -241,7 +241,7 @@ namespace TestANN.Network
                 {
                     for (int k = 0; k < values[i - 1].Count(); k++) // для каждого входа нейрона
                     {
-                        weights[i - 1][j][k] += speed * errorVals[i][j] * dfunc(values[i][j])*values[i-1][k];
+                        weights[i - 1][j][k] += speed * errorVals[i][j] * dfunc(values[i][j])*charges[i-1][k];
                     }
                 }
             }
