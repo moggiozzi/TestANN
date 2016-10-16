@@ -167,10 +167,13 @@ namespace TestANN.Network
             for (int i = 0; i < eachLayerNeuronCount.Count(); i++)
                 if (eachLayerNeuronCount[i] == 0)
                     throw new Exception();
+            for (int i = 0; i < eachLayerNeuronCount.Count()-1; i++)
+                eachLayerNeuronCount[i]++; // для пороговых нейронов ("смещения")
             weights = new double[eachLayerNeuronCount.Count() - 1][][];
             values = new double[eachLayerNeuronCount.Count()][];
             charges = new double[eachLayerNeuronCount.Count()][];
             errorVals = new double[eachLayerNeuronCount.Count()][];// fixme: 0-й слой лишний (оставлен для удобства индексации)
+            Random rnd = new Random();
             for (int i = 0; i < eachLayerNeuronCount.Count(); i++)
             {
                 uint cnt = eachLayerNeuronCount[i];
@@ -181,13 +184,23 @@ namespace TestANN.Network
                     {
                         weights[i - 1][j] = new double[eachLayerNeuronCount[i - 1]];
                         for (int k = 0; k < weights[i - 1][j].Count(); k++)
-                            weights[i - 1][j][k] = new Random().NextDouble() * 0.5 - 0.5;
+                            weights[i - 1][j][k] = rnd.NextDouble();
                     }
                     errorVals[i] = new double[eachLayerNeuronCount[i]];
                 }
                 charges[i] = new double[eachLayerNeuronCount[i]];
                 values[i] = new double[eachLayerNeuronCount[i]];
             }
+            weights[0][1][0]= 0.28196933832111271; //hiddenNeuron1.biasWeight 
+            weights[0][1][1]= 0.81488814522274222; //hiddenNeuron1.weights[0] 
+            weights[0][1][2]= 0.040481710359678472;//hiddenNeuron1.weights[1] 
+            weights[0][2][0]= 0.28196933832111271; //hiddenNeuron2.biasWeight 
+            weights[0][2][1]= 0.81488814522274222; //hiddenNeuron2.weights[0] 
+            weights[0][2][2]= 0.040481710359678472;//hiddenNeuron2.weights[1] 
+            weights[1][0][0]= 0.28196933832111271; //outputNeuron.biasWeight  
+            weights[1][0][1]= 0.81488814522274222; //outputNeuron.weights[0]  
+            weights[1][0][2]= 0.040481710359678472;//outputNeuron.weights[1]  
+
         }
         double func(double x) { return 1.0 / (1 + Math.Exp(-x)); }
         double dfunc(double x) { return Math.Exp(-x) / Math.Pow((1 + Math.Exp(-x)), 2); }
@@ -203,20 +216,22 @@ namespace TestANN.Network
             handleNetwork();
             // обратное распространение ошибки
             // значение ошибки для выходного слоя
-            for (int i = values.Count() - 1; i > 0; i--) // для каждого слоя(кроме входного)
+            for (int j = 0; j < values[values.Count() - 1].Count(); j++)
+                errorVals[values.Count() - 1][j] = ovals[j] - charges[values.Count() - 1][j];
+            for (int i = values.Count() - 2; i > 0; i--) // для каждого слоя(кроме входного)
             {
-                for (int j = 0; j < values[i].Count(); j++) // для каждого нейрона
+                if (i < values.Count() - 1)
                 {
-                    if (i == values.Count() - 1)
-                    {
-                        errorVals[i][j] = ovals[j] - charges[i][j];
-                    }
-                    else
-                    {
-                        errorVals[i][j] = 0.0;
-                        for (int k = 0; k < values[i + 1].Count(); k++) // перебор нейронов следующего(сверху) слоя
+                    errorVals[i][0] = 0.0;
+                    for (int k = 0; k < values[i + 1].Count(); k++) // перебор нейронов следующего(сверху) слоя
+                        errorVals[i][0] += errorVals[i + 1][k] * weights[i][k][0];
+                }
+                for (int j = 1; j < values[i].Count(); j++) // для каждого нейрона (кроме нейрона-"смещения")
+                {
+                    errorVals[i][j] = 0.0;
+                    for (int k = 0; k < values[i + 1].Count(); k++) // перебор нейронов следующего(сверху) слоя
+                        if(i == values.Count() - 2 || k != 0)
                             errorVals[i][j] += errorVals[i + 1][k] * weights[i][k][j];
-                    }
                 }
             }
             // корректировка весов
@@ -226,22 +241,26 @@ namespace TestANN.Network
                 {
                     for (int k = 0; k < values[i - 1].Count(); k++) // для каждого входа нейрона
                     {
-                        weights[i - 1][j][k] += speed * errorVals[i][j] * dfunc(values[i][j]);
+                        weights[i - 1][j][k] += speed * errorVals[i][j] * dfunc(values[i][j])*values[i-1][k];
                     }
                 }
             }
         }
         double handleNetwork()
         {
-            int networkInputsCount = values[0].Count();
-            for (int i = 1; i < values.Count(); i++) // для каждого слоя нейронов
+            for (int i = 1; i < values.Count(); i++) //для каждого слоя нейронов
             {
                 for (int j = 0; j < values[i].Count(); j++) // для каждого нейрона слоя
                 {
-                    values[i][j] = 0.0;
-                    for (int k = 0; k < values[i - 1].Count(); k++) // для каждого входа нейрона (перебор нейронов предыдущего слоя)
-                        values[i][j] += charges[i - 1][k] * weights[i - 1][j][k];
-                    charges[i][j] = func(values[i][j]);
+                    if (j == 0 && i < values.Count() - 1)
+                        charges[i][j] = values[i][j] = 1.0;
+                    else
+                    {
+                        values[i][j] = 0.0;
+                        for (int k = 0; k < values[i - 1].Count(); k++) // для каждого входа нейрона (перебор нейронов предыдущего слоя)
+                            values[i][j] += charges[i - 1][k] * weights[i - 1][j][k];
+                        charges[i][j] = func(values[i][j]);
+                    }
                 }
             }
             return charges.Last().Last();
@@ -263,6 +282,7 @@ namespace TestANN.Network
             {
                 charges[0][i] = values[0][i] = ivals[i - networkInputsOffset + ivalsOffset];
             }
+            charges[0][0] = values[0][0] = 1.0;
         }
         /// <summary>
         /// Предсказать один элемент
@@ -283,7 +303,7 @@ namespace TestANN.Network
             handleNetwork();
             for (int i = 0; i < ovals.Count(); i++)
             {
-                ovals[i] = values.Last()[i];
+                ovals[i] = charges.Last()[i];
             }
         }
         /// <summary>

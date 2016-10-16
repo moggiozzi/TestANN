@@ -187,16 +187,19 @@ namespace TestANN
                 for (int i = 0; i < ivals.Count(); i++)
                 {
                     fcn.handle(ivals[i], res);
+                    Console.WriteLine("{0} xor {1} = {2}", ivals[i][0], ivals[i][1], res[0]);
                     diff[i] = ovals[i][0] - res[0];
                     currentDiffSum += Math.Abs(diff[i]);
                 }
                 if (oldDiffSum > currentDiffSum)
                     oldDiffSum = currentDiffSum;
                 else // нет улучшения или возникла ошибка переобучения
-                    return;
+                    ;// return;
                 for (int i = 0; i < ivals.Count(); i++)
-                    fcn.doTraining(ivals[i], ovals[i]);
+                    fcn.doTraining(ivals[i], ovals[i],1.0);
                 cnt++;
+                if (cnt == 2000)
+                    break;
             }
         }
         public static void TestNetwork2()
