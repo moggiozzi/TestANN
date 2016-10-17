@@ -37,10 +37,29 @@ namespace TestANN
         }
         public static void TestNetwork()
         {
-            TestNetworkSin();
+            TestNetworkSin64();
         }
-        public static void TestNetworkSin()
+        public static void TestNetworkSin4()
         {
+            Network net = new Network(4, 4, 1);
+            List<DataSet> dataSets = new List<DataSet>();
+            DataSet ds;
+            ds = new DataSet(new double[] { 0, 1, 0, -1 }, new double[] { 0 }); dataSets.Add(ds);
+            ds = new DataSet(new double[] { 1, 0, -1, 0 }, new double[] { 1 }); dataSets.Add(ds);
+            ds = new DataSet(new double[] { 0, -1, 0, 1 }, new double[] { 0 }); dataSets.Add(ds);
+            ds = new DataSet(new double[] { -1, 0, 1, 0 }, new double[] { -1 }); dataSets.Add(ds);
+            net.Train(dataSets, 10000);
+            for (int i = 0; i < dataSets.Count; i++) {
+                double[] outs = net.Compute(dataSets[i].Values);
+                for(int j=0;j<dataSets[i].Values.Count();j++)
+                    Console.Write("{0} ", dataSets[i].Values[j]);
+                Console.WriteLine("-> {0}", outs[0]);
+            }
+        }
+        public static void TestNetworkSin64()
+        {
+            int n = 64;
+            double[] data = new double[n];
             Network net = new Network(4, 4, 1);
             List<DataSet> dataSets = new List<DataSet>();
             DataSet ds;
@@ -48,10 +67,11 @@ namespace TestANN
             ds = new DataSet(new double[] { 1, 0.5, 0, 0.5 }, new double[] { 1.0 }); dataSets.Add(ds);
             ds = new DataSet(new double[] { 0.5, 0, 0.5, 1 }, new double[] { 0.5 }); dataSets.Add(ds);
             ds = new DataSet(new double[] { 0, 0.5, 1, 0.5 }, new double[] { 0.0 }); dataSets.Add(ds);
-            net.Train(dataSets, 1000);
-            for (int i = 0; i < dataSets.Count; i++) {
+            net.Train(dataSets, 10000);
+            for (int i = 0; i < dataSets.Count; i++)
+            {
                 double[] outs = net.Compute(dataSets[i].Values);
-                for(int j=0;j<dataSets[i].Values.Count();j++)
+                for (int j = 0; j < dataSets[i].Values.Count(); j++)
                     Console.Write("{0} ", dataSets[i].Values[j]);
                 Console.WriteLine("-> {0}", outs[0]);
             }

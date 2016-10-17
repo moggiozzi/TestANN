@@ -65,5 +65,10 @@ namespace TestANN
         {
             Tests.TestNetwork();
         }
+
+        private void TestText_Click(object sender, RoutedEventArgs e)
+        {
+            TextHelper.calcSymbolCombinationsProbability();
+        }
     }
 }

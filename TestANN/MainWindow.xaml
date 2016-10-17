@@ -14,7 +14,8 @@
         <Button x:Name="LoadAndPlay" Content="TestPlay" Margin="45,261,0,0" VerticalAlignment="Top" Click="button_Click" HorizontalAlignment="Left" Width="75"/>
         <Button x:Name="Save" Grid.ColumnSpan="2" Content="TestSave" HorizontalAlignment="Left" Margin="223,261,0,0" VerticalAlignment="Top" Width="75" Click="button1_Click"/>
         <Canvas x:Name="MyCanvas" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="143" Margin="83,75,0,0" VerticalAlignment="Top" Width="240"/>
-        <Button x:Name="Draw" Content="TestDraw" Grid.Column="1" HorizontalAlignment="Left" Margin="84,270,0,0" VerticalAlignment="Top" Width="75" Click="Draw_Click"/>
+        <Button x:Name="Draw" Content="TestDraw" Grid.Column="1" HorizontalAlignment="Left" Margin="60,261,0,0" VerticalAlignment="Top" Width="75" Click="Draw_Click"/>
         <Button x:Name="TestNet" Content="TestNet" Grid.Column="1" HorizontalAlignment="Left" Margin="157,292,0,0" VerticalAlignment="Top" Width="75" Click="TestNet_Click"/>
+        <Button x:Name="TestText" Content="TestText" Grid.Column="1" HorizontalAlignment="Left" Margin="157,234,0,0" VerticalAlignment="Top" Width="75" Click="TestText_Click"/>
     </Grid>
 </Window>
