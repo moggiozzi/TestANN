@@ -10,6 +10,7 @@ namespace TestANN
 {
     class TextHelper
     {
+        #region Probability
         // Только строчные!
         // Только русский!
         // Только юникод!
@@ -150,5 +151,13 @@ namespace TestANN
                 }
             }
         }
+        #endregion
+        #region Sounds
+        // гласные звонкие: а о э и у ы 
+        // твердные: б г д к п т - в з л м н р с ф х
+        // они же мягкие: б' г' д' к' п' т' - в' з' л' м' н' р' с' ф' х'
+        // ц - ж ш 
+        // ч' - ш' й'
+        #endregion
     }
 }

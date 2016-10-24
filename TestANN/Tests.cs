@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 //using TestANN.Network;
 using NeuralNetwork.Network;
+using Microsoft.Win32;
 
 namespace TestANN
 {
@@ -75,6 +76,71 @@ namespace TestANN
                     Console.Write("{0} ", dataSets[i].Values[j]);
                 Console.WriteLine("-> {0}", outs[0]);
             }
+        }
+
+        public static void TestAutoencoder()
+        {
+            ImageHelper img = new ImageHelper();
+            OpenFileDialog dlg = new OpenFileDialog();
+            if (dlg.ShowDialog() == true)
+                img.loadImage(dlg.FileName);
+
+            int w = 10;
+            int inputSize = w * w;
+            int hiddenSize = 10;
+            Network net = new Network(inputSize, hiddenSize, inputSize);
+
+            byte[] data = new byte[w * w];
+            double[] ddata = new double[w * w];
+            double[] evals = new double[w * w];
+            for(int z=0;z<10;z++)
+            for(int i=0;i<img.Width-w;i++)
+                for(int j = 0; j < img.Height - w; j++)
+                {
+                    // Получить фрейм(кусочек изображения)
+                    img.getData(data, i, j, w, w);
+                    for (int k = 0; k < data.Count(); k++)
+                        ddata[k] = data[k] / 255.0;
+                    //Обучить
+                    DataSet ds = new DataSet(ddata, ddata);
+                    List<DataSet> dataSets = new List<DataSet>();
+                    dataSets.Add(ds);
+                    net.Train(dataSets, 1);
+                }
+            // Сохранить
+            //xj=wij/sqrt(sum(wij^2))
+            double sum = 0.0;
+            foreach(var n in net.HiddenLayer)
+            {
+                foreach(var s in n.InputSynapses)
+                {
+                    sum += s.Weight * s.Weight;
+                }
+            }
+            sum = Math.Sqrt(sum);
+            for(int i=0;i<net.HiddenLayer.Count;i++)
+            {
+                var n = net.HiddenLayer[i];
+                for(int j=0;j<n.InputSynapses.Count;j++)
+                {
+                    var s = n.InputSynapses[j];
+                    data[j] = (byte)toByte(s.Weight / sum * 255);
+                }
+                //img.setData(data, (i * w + w) % img.Width, (i * w) / img.Height, w, w);
+                img.setData(data, i*w, 0, w, w);
+            }
+            SaveFileDialog sdlg = new SaveFileDialog();
+            if (sdlg.ShowDialog() == true) {
+                img.saveImage(sdlg.FileName);
+            }
+        }
+        static byte toByte(double d)
+        {
+            if (d < 0.0)
+                return 0;
+            if (d > 1.0)
+                return 255;
+            return (byte)(d * 255);
         }
     }
 }

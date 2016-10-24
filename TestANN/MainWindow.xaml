@@ -17,5 +17,6 @@
         <Button x:Name="Draw" Content="TestDraw" Grid.Column="1" HorizontalAlignment="Left" Margin="60,261,0,0" VerticalAlignment="Top" Width="75" Click="Draw_Click"/>
         <Button x:Name="TestNet" Content="TestNet" Grid.Column="1" HorizontalAlignment="Left" Margin="157,292,0,0" VerticalAlignment="Top" Width="75" Click="TestNet_Click"/>
         <Button x:Name="TestText" Content="TestText" Grid.Column="1" HorizontalAlignment="Left" Margin="157,234,0,0" VerticalAlignment="Top" Width="75" Click="TestText_Click"/>
+        <Button x:Name="TestImage" Content="TestImage" Grid.Column="1" HorizontalAlignment="Left" Margin="157,196,0,0" VerticalAlignment="Top" Width="75" Click="TestImage_Click"/>
     </Grid>
 </Window>

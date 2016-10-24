@@ -70,5 +70,10 @@ namespace TestANN
         {
             TextHelper.calcSymbolCombinationsProbability();
         }
+
+        private void TestImage_Click(object sender, RoutedEventArgs e)
+        {
+            Tests.TestAutoencoder();
+        }
     }
 }

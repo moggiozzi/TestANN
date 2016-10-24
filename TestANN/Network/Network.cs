@@ -105,8 +105,14 @@ namespace NeuralNetwork.Network
 		{
 			return 2 * Random.NextDouble() - 1;
 		}
-		#endregion
-	}
+        #endregion
+
+        public double ComputeAndGetError(double[] inputs, double[] targets)
+        {
+            ForwardPropagate(inputs);
+            return CalculateError(targets);
+        }
+    }
 
 	#region -- Enum --
 	public enum TrainingType
