@@ -33,7 +33,10 @@ namespace TestANN
             for(int i=0;i<w;i++) //w
                 for(int j=0;j<h;j++) //h
                 {
-                    data[i+j*w] = myImageData[((j + y) * myImage.Width + x + i)*3];
+                    data[i+j*w] = (byte)
+                        ((myImageData[((j + y) * myImage.Width + x + i) * 3+0]
+                        + myImageData[((j + y) * myImage.Width + x + i) * 3+1]
+                        + myImageData[((j + y) * myImage.Width + x + i) * 3+2])/3.0);
                 }
         }
         public void setData(byte[] data, int x, int y, int w, int h)
