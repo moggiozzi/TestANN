@@ -87,7 +87,7 @@ namespace TestANN
 
             int w = 10;
             int inputSize = w * w;
-            int hiddenSize = 10;
+            int hiddenSize = 5;// 10;
             Network net = new Network(inputSize, hiddenSize, inputSize);
 
             byte[] data = new byte[w * w];
@@ -109,7 +109,7 @@ namespace TestANN
             //double oldErr = err;
             int epoch = 0;
             double minErr = err;
-            while (err>10)
+            while (err>0.1)
             {
                 net.Train(dataSets, 10);
                 //cохранить результат предсказания
@@ -121,6 +121,7 @@ namespace TestANN
                         double[] ddata = net.Compute(dataSets[z].Values);
                         err += net.CalculateError(dataSets[z].Targets);
                     }
+                err /= dataSets.Count();
                 if (err < minErr)
                     minErr = err;
                 epoch++;
@@ -131,7 +132,7 @@ namespace TestANN
                 for (int i = 0; i <= img.Width - w; i += w)
                     for (int j = 0; j <= img.Height - w; j += w)
                     {
-                        double[] ddata = net.Compute(dataSets[z].Values);
+                        double[] ddata = net.Compute(dataSets[z++].Values);
                         for (int k = 0; k < ddata.Count(); k++)
                             data[k] = toByte(ddata[k]);
                         img.setData(data, i, j, w, w);
@@ -153,12 +154,12 @@ namespace TestANN
                 for(int j=0;j<n.InputSynapses.Count;j++)
                 {
                     var s = n.InputSynapses[j];
-                    data[j] = (byte)toByte(s.Weight / sum * 255);
+                    data[j] = (byte)toByte(s.Weight / sum);
                 }
                 //img.setData(data, (i * w + w) % img.Width, (i * w) / img.Height, w, w);
                 img.setData(data, i*w, 0, w, w);
             }
-            img.saveImage(dlg.FileName + err.ToString("F0")+"neurons.jpg");
+            img.saveImage(dlg.FileName + err.ToString("F2")+"neurons.jpg");
         }
         static byte toByte(double d)
         {
