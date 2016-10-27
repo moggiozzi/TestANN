@@ -87,7 +87,7 @@ namespace TestANN
 
             int w = 10;
             int inputSize = w * w;
-            int hiddenSize = 5;// 10;
+            int hiddenSize = 3;// 5;// 10;
             Network net = new Network(inputSize, hiddenSize, inputSize);
 
             byte[] data = new byte[w * w];
@@ -139,22 +139,24 @@ namespace TestANN
                     }
             }
             //xj=wij/sqrt(sum(wij^2))
-            double sum = 0.0;
-            foreach(var n in net.HiddenLayer)
+            double[] sums = new double[net.HiddenLayer.Count()];
+            for(int i=0;i<net.HiddenLayer.Count();i++)
             {
-                foreach(var s in n.InputSynapses)
+                sums[i] = 0;
+                var n = net.HiddenLayer[i];
+                foreach (var s in n.InputSynapses)
                 {
-                    sum += s.Weight * s.Weight;
+                    sums[i] += s.Weight * s.Weight;
                 }
+                sums[i] = Math.Sqrt(sums[i]);
             }
-            sum = Math.Sqrt(sum);
             for(int i=0;i<net.HiddenLayer.Count;i++)
             {
                 var n = net.HiddenLayer[i];
                 for(int j=0;j<n.InputSynapses.Count;j++)
                 {
                     var s = n.InputSynapses[j];
-                    data[j] = (byte)toByte(s.Weight / sum);
+                    data[j] = toByte(s.Weight / sums[i]);
                 }
                 //img.setData(data, (i * w + w) % img.Width, (i * w) / img.Height, w, w);
                 img.setData(data, i*w, 0, w, w);

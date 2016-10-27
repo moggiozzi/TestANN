@@ -103,7 +103,7 @@ namespace NeuralNetwork.Network
 		#region -- Helpers --
 		public static double GetRandom()
 		{
-			return 2 * Random.NextDouble() - 1;
+			return (2 * Random.NextDouble() - 1)*0.1;
 		}
         #endregion
 
