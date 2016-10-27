@@ -91,36 +91,23 @@ namespace TestANN
             Network net = new Network(inputSize, hiddenSize, inputSize);
 
             byte[] data = new byte[w * w];
-            double[] ddata = new double[w * w];
-            //ВАРИАНТ А отлично обучается
-            for(int z=0;z<10;z++)
-            for (int i = 0; i < img.Width - w; i++)
-                for (int j = 0; j < img.Height - w; j++)
+
+            List<DataSet> dataSets = new List<DataSet>();
+            for (int i = 0; i <= img.Width - w; i+=w)
+                for (int j = 0; j <= img.Height - w; j+=w)
                 {
+                    double[] ddata = new double[w * w];
                     // Получить фрейм(кусочек изображения)
                     img.getData(data, i, j, w, w);
                     for (int k = 0; k < data.Count(); k++)
                         ddata[k] = toDouble(data[k]);
                     //Обучить
-                    List<DataSet> dataSets = new List<DataSet>();
                     DataSet ds = new DataSet(ddata, ddata);
                     dataSets.Add(ds);
                     net.Train(dataSets, 1);
                 }
-            ////ВАРИАНТ B не обучается
-            //List<DataSet> dataSets = new List<DataSet>();
-            //for (int i=0;i<img.Width-w;i++)
-            //    for(int j = 0; j < img.Height - w; j++)
-            //    {
-            //        // Получить фрейм(кусочек изображения)
-            //        img.getData(data, i, j, w, w);
-            //            for (int k = 0; k < data.Count(); k++)
-            //                ddata[k] = toDouble(data[k]);
-            //        //Обучить
-            //        DataSet ds = new DataSet(ddata, ddata);
-            //        dataSets.Add(ds);
-            //    }
-            //net.Train(dataSets, 10);
+            net.Train(dataSets, 10);
+
             // Сохранить
             //xj=wij/sqrt(sum(wij^2))
             double sum = 0.0;
