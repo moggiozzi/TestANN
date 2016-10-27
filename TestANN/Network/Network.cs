@@ -93,7 +93,7 @@ namespace NeuralNetwork.Network
 			return OutputLayer.Select(a => a.Value).ToArray();
 		}
 
-		private double CalculateError(params double[] targets)
+		public double CalculateError(params double[] targets)
 		{
 			var i = 0;
 			return OutputLayer.Sum(a => Math.Abs(a.CalculateError(targets[i++])));

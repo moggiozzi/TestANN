@@ -104,11 +104,39 @@ namespace TestANN
                     //Обучить
                     DataSet ds = new DataSet(ddata, ddata);
                     dataSets.Add(ds);
-                    net.Train(dataSets, 1);
                 }
-            net.Train(dataSets, 10);
-
+            double err = 9999;// double.MaxValue;
+            //double oldErr = err;
+            int epoch = 0;
+            double minErr = err;
+            while (err>10)
+            {
+                net.Train(dataSets, 10);
+                //cохранить результат предсказания
+                int z = 0;
+                err = 0;
+                for (int i = 0; i <= img.Width - w; i += w)
+                    for (int j = 0; j <= img.Height - w; j += w)
+                    {
+                        double[] ddata = net.Compute(dataSets[z].Values);
+                        err += net.CalculateError(dataSets[z].Targets);
+                    }
+                if (err < minErr)
+                    minErr = err;
+                epoch++;
+            }
             // Сохранить
+            {
+                int z = 0;
+                for (int i = 0; i <= img.Width - w; i += w)
+                    for (int j = 0; j <= img.Height - w; j += w)
+                    {
+                        double[] ddata = net.Compute(dataSets[z].Values);
+                        for (int k = 0; k < ddata.Count(); k++)
+                            data[k] = toByte(ddata[k]);
+                        img.setData(data, i, j, w, w);
+                    }
+            }
             //xj=wij/sqrt(sum(wij^2))
             double sum = 0.0;
             foreach(var n in net.HiddenLayer)
@@ -130,10 +158,7 @@ namespace TestANN
                 //img.setData(data, (i * w + w) % img.Width, (i * w) / img.Height, w, w);
                 img.setData(data, i*w, 0, w, w);
             }
-            SaveFileDialog sdlg = new SaveFileDialog();
-            if (sdlg.ShowDialog() == true) {
-                img.saveImage(sdlg.FileName);
-            }
+            img.saveImage(dlg.FileName + err.ToString("F0")+"neurons.jpg");
         }
         static byte toByte(double d)
         {
